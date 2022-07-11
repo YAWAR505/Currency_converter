@@ -1,23 +1,18 @@
-import logo from './logo.svg';
+import { useCallback } from 'react';
 import './App.css';
+import CurrencyConverter from './Components/CurrencyConverter';
 
 function App() {
+  const format = useCallback((value, number) => {
+    if (!(value % 1 === 0)) {
+      return value.toFixed(number);
+    } else {
+      return value;
+    }
+  }, [])
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div >
+      <CurrencyConverter format={format} />
     </div>
   );
 }
