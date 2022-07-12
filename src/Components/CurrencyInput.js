@@ -6,31 +6,22 @@ import Dropdown from 'react-dropdown';
 import 'react-dropdown/style.css';
 import '../App.css';
 
-const CurrencyInput = ({ onAmountChange, amount, options, setCurrency, values, info }) => {
-
-
-
+const CurrencyInput = ({ onAmountChange, amount, options, setCurrency, values }) => {
     return (
 
         <div className="container">
             <div className="left">
-                <TextField
+                <input
+                    className="text_field"
                     type="text"
-                    label="Amount"
                     value={amount}
-                    size="lg"
-                    placeholder="Enter amount"
                     onChange={onAmountChange}
-                    variant="outlined"
-                    fullWidth
-
                 />
-
-
                 <Dropdown
+                    className='dropdown'
                     options={options}
                     onChange={(e) => { setCurrency(e.value) }}
-                    value={values}
+                    value={values.toUpperCase()}
                     placeholder="From"
                 />
             </div>

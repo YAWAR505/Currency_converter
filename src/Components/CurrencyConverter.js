@@ -10,12 +10,16 @@ const CurrencyConverter = ({ format }) => {
     const [to, setTo] = useState("usd");
     const [options, setOptions] = useState([]);
     const [amountInFromCurrency, setAmountInFromCurrency] = useState(true);
+
+
+    console.log(info, 'info');
     // Calling the api whenever the dependency changes
+
     useEffect(() => {
         Axios.get(
-            `https://cdn.jsdelivr.net/gh/fawazahmed0/currency-api@1/latest/currencies/${from}.json`)
+            `https://cdn.jsdelivr.net/gh/fawazahmed0/currency-api@1/latest/currencies/.json`)
             .then((res) => {
-                setInfo(res.data[from]);
+                setInfo(res.data);
             })
     }, [from]);
 
@@ -29,8 +33,6 @@ const CurrencyConverter = ({ format }) => {
         setAmountInFromCurrency(false);
     }, [])
 
-    // Calling the convert function whenever
-    // a user switches the currency
 
     useEffect(() => {
         setOptions(Object.keys(info));
@@ -39,31 +41,57 @@ const CurrencyConverter = ({ format }) => {
 
     const flip = () => {
         var temp = from;
+        // var current = toAmount
+        // toAmount = amount
+        // setAmount(current)
         setFrom(to);
         setTo(temp);
     }
+
     let fromAmount, toAmount
-    if (amountInFromCurrency) {
-        fromAmount = amount
-        var rate = info[to]
-        console.log(rate, 'rate');
-        toAmount = format((amount * rate), 3);
-
-    } else {
-        toAmount = amount
-        fromAmount = format((amount / rate), 3);
-
-    }
+    useEffect(() => {
+        if (amountInFromCurrency) {
+            fromAmount = amount
+            var rate = info[to]
+            toAmount = format((amount * rate), 3);
+            // setToAmounts(toAmount)
+        } else {
+            toAmount = amount
+            var rates = info[to]
+            fromAmount = format((amount / rates), 3);
+            // setFromAmounts(fromAmount)
+        }
+    }, [amountInFromCurrency, amount, info])
 
     return (
-        <div className='currency'>
-            < CurrencyInput amount={fromAmount} onAmountChange={handleFromAmountChange} options={options} setCurrency={setFrom} values={from} info />
-            <div className="switch">
-                <HiSwitchHorizontal size="30px"
-                    onClick={flip} />
-            </div>
-            < CurrencyInput amount={toAmount} onAmountChange={handleToAmountChange} options={options} setCurrency={setTo} values={to} info={info} />
+        <div className='parentConverter'>
+            <div className='currency'>
+                <h1>
+                    ETH to USD Converter
+                </h1>
+                <div className='input_div'>
+                    <CurrencyInput
+                        amount={fromAmount}
+                        onAmountChange={handleFromAmountChange}
+                        options={options.filter((name) => name === "eth".toUpperCase())}
+                        setCurrency={setFrom}
+                        values={from}
+                    />
+                    <div className="switch">
+                        <HiSwitchHorizontal size="30px"
+                            onClick={flip} />
+                    </div>
+                    <CurrencyInput
+                        amount={toAmount}
+                        onAmountChange={handleToAmountChange}
+                        options={options.filter((name) => name === "usd".toUpperCase())}
+                        setCurrency={setTo}
+                        values={to}
 
+                    />
+                </div>
+
+            </div>
         </div>
     )
 }
