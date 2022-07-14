@@ -5,19 +5,21 @@ import { HiSwitchHorizontal } from 'react-icons/hi';
 
 const CurrencyConverter = ({ format }) => {
     const [info, setInfo] = useState([]);
-    const [amount, setAmount] = useState(1);
+    const [amount, setAmount] = useState(0);
     const [from, setFrom] = useState("eth");
     const [to, setTo] = useState("usd");
     const [options, setOptions] = useState([]);
     const [amountInFromCurrency, setAmountInFromCurrency] = useState(true);
     const [FromAmounts, setFromAmounts] = useState(0);
     const [ToAmounts, setToAmounts] = useState(0);
+    const [input, setInput] = useState(false)
 
 
     // Calling the api whenever the dependency changes
 
 
     useEffect(() => {
+
         Axios.get(
             `https://cdn.jsdelivr.net/gh/fawazahmed0/currency-api@1/latest/currencies/${from}.json`)
             .then((res) => {
@@ -27,14 +29,16 @@ const CurrencyConverter = ({ format }) => {
 
     const handleFromAmountChange = useCallback((e) => {
         setAmount(e.target.value);
-        setAmountInFromCurrency(true);
+        setInput(true)
+        // setFromAmounts(amount)
+
+
     }, [])
 
     const handleToAmountChange = useCallback((e) => {
         setAmount(e.target.value);
-        setAmountInFromCurrency(false);
+        setInput(false)
     }, [])
-
 
     useEffect(() => {
         setOptions(Object.keys(info));
@@ -43,20 +47,21 @@ const CurrencyConverter = ({ format }) => {
     // Function to switch between two currency
 
     const flip = () => {
-        var temp = from;
-        // var swap = toAmount
-        // toAmount = fromAmount
-        // setAmount(swap)
-        setFrom(to);
-        setTo(temp);
+        setAmountInFromCurrency(!amountInFromCurrency)
+
     }
 
-    //  average the values  
+    let fromAmount, toAmount;
+    if (input) {
+        fromAmount = amount;
+        toAmount = format(amount * info[to], 3);
+        // setAmount(toAmount);
+    } else {
+        toAmount = amount;
+        fromAmount = amount
+        // setFromAmounts(fromAmount)
+    }
 
-    useEffect(() => {
-        setToAmounts(format((amount * info[to]), 3))
-        setFromAmounts(format((amount / info[from]), 3))
-    }, [amount, info])
     return (
         <div className='parentConverter'>
             <div className='currency'>
@@ -65,22 +70,23 @@ const CurrencyConverter = ({ format }) => {
                 </h1>
                 <div className='input_div'>
                     <CurrencyInput
-                        amount={FromAmounts}
+                        amount={amountInFromCurrency ? fromAmount : toAmount}
                         onAmountChange={handleFromAmountChange}
-                        options={options.map((name) => name.toUpperCase())}
+                        options={options}
                         setCurrency={setFrom}
-                        values={from}
+                        values={amountInFromCurrency ? from : to}
                     />
                     <div className="switch">
                         <HiSwitchHorizontal size="30px"
                             onClick={flip} />
                     </div>
                     <CurrencyInput
-                        amount={ToAmounts}
+                        amount={amountInFromCurrency ? toAmount : fromAmount}
                         onAmountChange={handleToAmountChange}
-                        options={options.map((name) => name.toUpperCase())}
+                        options={options}
                         setCurrency={setTo}
-                        values={to}
+                        values={amountInFromCurrency ? to : from}
+
 
                     />
                 </div>

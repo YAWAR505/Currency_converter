@@ -6,7 +6,7 @@ import Dropdown from 'react-dropdown';
 import 'react-dropdown/style.css';
 import '../App.css';
 
-const CurrencyInput = ({ onAmountChange, amount, options, setCurrency, values }) => {
+const CurrencyInput = ({ onAmountChange, amount, options, setCurrency, values, names }) => {
     return (
 
         <div className="container">
@@ -15,14 +15,15 @@ const CurrencyInput = ({ onAmountChange, amount, options, setCurrency, values })
                     className="text_field"
                     type="text"
                     value={amount}
+                    name={names}
                     onChange={onAmountChange}
                 />
                 <Dropdown
                     className='dropdown'
                     options={options}
-                    onChange={(e) => { setCurrency(e.value) }}
-                    value={values.toUpperCase()}
-                    placeholder="From"
+                    onChange={(e) => { setCurrency(e.target.value) }}
+                    value={values}
+                // placeholder="From"
                 />
             </div>
 
