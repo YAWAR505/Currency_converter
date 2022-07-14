@@ -10,16 +10,18 @@ const CurrencyConverter = ({ format }) => {
     const [to, setTo] = useState("usd");
     const [options, setOptions] = useState([]);
     const [amountInFromCurrency, setAmountInFromCurrency] = useState(true);
+    const [FromAmounts, setFromAmounts] = useState(0);
+    const [ToAmounts, setToAmounts] = useState(0);
 
 
-    console.log(info, 'info');
     // Calling the api whenever the dependency changes
+
 
     useEffect(() => {
         Axios.get(
-            `https://cdn.jsdelivr.net/gh/fawazahmed0/currency-api@1/latest/currencies/.json`)
+            `https://cdn.jsdelivr.net/gh/fawazahmed0/currency-api@1/latest/currencies/${from}.json`)
             .then((res) => {
-                setInfo(res.data);
+                setInfo(res.data[from]);
             })
     }, [from]);
 
@@ -37,32 +39,24 @@ const CurrencyConverter = ({ format }) => {
     useEffect(() => {
         setOptions(Object.keys(info));
     }, [info])
+
     // Function to switch between two currency
 
     const flip = () => {
         var temp = from;
-        // var current = toAmount
-        // toAmount = amount
-        // setAmount(current)
+        // var swap = toAmount
+        // toAmount = fromAmount
+        // setAmount(swap)
         setFrom(to);
         setTo(temp);
     }
 
-    let fromAmount, toAmount
-    useEffect(() => {
-        if (amountInFromCurrency) {
-            fromAmount = amount
-            var rate = info[to]
-            toAmount = format((amount * rate), 3);
-            // setToAmounts(toAmount)
-        } else {
-            toAmount = amount
-            var rates = info[to]
-            fromAmount = format((amount / rates), 3);
-            // setFromAmounts(fromAmount)
-        }
-    }, [amountInFromCurrency, amount, info])
+    //  average the values  
 
+    useEffect(() => {
+        setToAmounts(format((amount * info[to]), 3))
+        setFromAmounts(format((amount / info[from]), 3))
+    }, [amount, info])
     return (
         <div className='parentConverter'>
             <div className='currency'>
@@ -71,9 +65,9 @@ const CurrencyConverter = ({ format }) => {
                 </h1>
                 <div className='input_div'>
                     <CurrencyInput
-                        amount={fromAmount}
+                        amount={FromAmounts}
                         onAmountChange={handleFromAmountChange}
-                        options={options.filter((name) => name === "eth".toUpperCase())}
+                        options={options.map((name) => name.toUpperCase())}
                         setCurrency={setFrom}
                         values={from}
                     />
@@ -82,9 +76,9 @@ const CurrencyConverter = ({ format }) => {
                             onClick={flip} />
                     </div>
                     <CurrencyInput
-                        amount={toAmount}
+                        amount={ToAmounts}
                         onAmountChange={handleToAmountChange}
-                        options={options.filter((name) => name === "usd".toUpperCase())}
+                        options={options.map((name) => name.toUpperCase())}
                         setCurrency={setTo}
                         values={to}
 
